@@ -45,7 +45,7 @@ The reference application deploy job is expecting the default environment to be 
                 |    docker-compose -p ${SERVICE_NAME} up -d
                 |    ## Add nginx configuration
                 |    sed -i "s/###TOMCAT_SERVICE_NAME###/${SERVICE_NAME}/" $2
-                |    docker cp $2 proxy:/etc/nginx/sites-enabled/${SERVICE_NAME}.conf
+                |    docker cp $2 proxy:/etc/nginx/conf.d/${SERVICE_NAME}.conf
                 |}
                 |
                 |if [ "$ENVIRONMENT_TYPE" == "DEV" ]; then
@@ -74,7 +74,7 @@ The reference application deploy job is expecting the default environment to be 
                 |    sed -i "s/${TOKEN_TOMCAT_1_PORT}/8080/g" prod-tomcat.conf
                 |    sed -i "s/${TOKEN_TOMCAT_2_IP}/${TOMCAT_2_IP}/g" prod-tomcat.conf
                 |    sed -i "s/${TOKEN_TOMCAT_2_PORT}/8080/g" prod-tomcat.conf
-                |    docker cp prod-tomcat.conf proxy:/etc/nginx/sites-enabled/${PROJECT_KEY_PROD}.conf
+                |    docker cp prod-tomcat.conf proxy:/etc/nginx/conf.d/${PROJECT_KEY_PROD}.conf
                 |fi
                 |## Reload nginx
                 |docker exec proxy /usr/sbin/nginx -s reload
@@ -117,7 +117,7 @@ destroyEnvironmentJob.with{
                 |    docker-compose -p ${SERVICE_NAME} stop
                 |    docker-compose -p ${SERVICE_NAME} rm -f
                 |    ## Deleted nginx configuration
-                |    docker exec proxy rm -f /etc/nginx/sites-enabled/${SERVICE_NAME}.conf
+                |    docker exec proxy rm -f /etc/nginx/conf.d/${SERVICE_NAME}.conf
                 |}
                 |
                 |if [ "$ENVIRONMENT_TYPE" == "DEV" ]; then
@@ -127,7 +127,7 @@ destroyEnvironmentJob.with{
                 |    deleteDockerContainer "PRODA" "tomcatA.conf"
                 |    deleteDockerContainer "PRODB" "tomcatB.conf"
                 |    PROJECT_KEY_PROD="$(echo ${PROJECT_NAME} | tr '/' '_')_PROD"
-                |    docker exec proxy rm -f /etc/nginx/sites-enabled/${PROJECT_KEY_PROD}.conf
+                |    docker exec proxy rm -f /etc/nginx/conf.d/${PROJECT_KEY_PROD}.conf
                 |fi
                 |
                 |docker exec proxy /usr/sbin/nginx -s reload
